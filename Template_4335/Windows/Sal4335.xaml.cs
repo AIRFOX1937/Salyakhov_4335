@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Template_4335.Windows.Sal_4335;
 
 namespace Template_4335.Windows
 {
@@ -22,6 +23,33 @@ namespace Template_4335.Windows
         public Sal4335()
         {
             InitializeComponent();
+        }
+
+        private void ExcelPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ExcelPage());
+        }
+
+        private void WordPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new WordPage());
+        }
+
+        private void DeleteDataBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Очистить данные?", "Внимание!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                using (var isrpoEntities = new IsrpoEntities())
+                {
+                    isrpoEntities.employees.RemoveRange(isrpoEntities.employees.ToList());
+                    isrpoEntities.SaveChanges();
+                    IsrpoEntities.GetContext().employees.AsEnumerable().OrderBy(x => Convert.ToInt32(x.id_e)).ToList().Clear();
+                    foreach (var uslugi in isrpoEntities.employees.AsEnumerable().OrderBy(x => Convert.ToInt32(x.id_e)).ToList())
+                    {
+                        IsrpoEntities.GetContext().employees.AsEnumerable().OrderBy(x => Convert.ToInt32(x.id_e)).ToList().Add(uslugi);
+                    }
+                }
+            }
         }
     }
 }
